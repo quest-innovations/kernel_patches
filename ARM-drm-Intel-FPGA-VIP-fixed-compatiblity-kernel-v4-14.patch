@@ -1,0 +1,45 @@
+diff --git a/drivers/gpu/drm/ivip/intel_vip_conn.c b/drivers/gpu/drm/ivip/intel_vip_conn.c
+index c88df235b64c..aa038532f202 100644
+--- a/drivers/gpu/drm/ivip/intel_vip_conn.c
++++ b/drivers/gpu/drm/ivip/intel_vip_conn.c
+@@ -41,7 +41,6 @@ static void intelvipfb_drm_connector_destroy(struct drm_connector *connector)
+ }
+ 
+ static const struct drm_connector_funcs intelvipfb_drm_connector_funcs = {
+-	.dpms = drm_atomic_helper_connector_dpms,
+ 	.reset = drm_atomic_helper_connector_reset,
+ 	.detect = intelvipfb_drm_connector_detect,
+ 	.fill_modes = drm_helper_probe_single_connector_modes,
+diff --git a/drivers/gpu/drm/ivip/intel_vip_core.c b/drivers/gpu/drm/ivip/intel_vip_core.c
+index ffe957b58140..d61e215ea6e4 100644
+--- a/drivers/gpu/drm/ivip/intel_vip_core.c
++++ b/drivers/gpu/drm/ivip/intel_vip_core.c
+@@ -104,6 +104,7 @@ int intelvipfb_probe(struct device *dev)
+ 	struct intelvipfb_priv *fbpriv = dev_get_drvdata(dev);
+ 	struct drm_connector *connector;
+ 	u32 formats[] = {DRM_FORMAT_XRGB8888};
++	u64 format_modifiers[] = {DRM_FORMAT_MOD_INVALID};
+ 
+ 	drm = fbpriv->drm;
+ 
+@@ -119,7 +120,7 @@ int intelvipfb_probe(struct device *dev)
+ 
+ 	retval = drm_simple_display_pipe_init(drm, &fbpriv->pipe,
+ 			&fbpriv_funcs, formats,
+-			ARRAY_SIZE(formats), connector);
++			ARRAY_SIZE(formats), format_modifiers, connector);
+ 	if (retval < 0) {
+ 		dev_err(drm->dev, "Cannot setup simple display pipe\n");
+ 		goto err_mode_config;
+diff --git a/drivers/gpu/drm/ivip/intel_vip_of.c b/drivers/gpu/drm/ivip/intel_vip_of.c
+index 79849a50f28d..9af171692a8e 100644
+--- a/drivers/gpu/drm/ivip/intel_vip_of.c
++++ b/drivers/gpu/drm/ivip/intel_vip_of.c
+@@ -50,7 +50,6 @@ static struct drm_driver intelvipfb_drm = {
+ 	.gem_free_object_unlocked = drm_gem_cma_free_object,
+ 	.gem_vm_ops = &drm_gem_cma_vm_ops,
+ 	.dumb_create = drm_gem_cma_dumb_create,
+-	.dumb_map_offset = drm_gem_cma_dumb_map_offset,
+ 	.dumb_destroy = drm_gem_dumb_destroy,
+ 	.prime_handle_to_fd = drm_gem_prime_handle_to_fd,
+ 	.prime_fd_to_handle = drm_gem_prime_fd_to_handle,
